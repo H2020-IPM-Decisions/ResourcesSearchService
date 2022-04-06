@@ -36,7 +36,7 @@ namespace H2020.IPMDecisions.SCH.API.Controllers
         [HttpPost(Name = "api.search.post")]
         public async Task<IActionResult> Post([FromBody] SearchRequestDto searchRequestDto)
         {
-            var listOfDss = await this.microservicesCommunication.GetAllListOfDssFromDssMicroservice("", "");
+            var listOfDss = await this.microservicesCommunication.GetAllListOfDssFromDssMicroservice(searchRequestDto.SpecificCrop, searchRequestDto.Language);
             return Ok(listOfDss);
         }
     }

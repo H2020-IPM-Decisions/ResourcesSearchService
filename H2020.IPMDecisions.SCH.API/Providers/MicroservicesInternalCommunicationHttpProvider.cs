@@ -34,7 +34,7 @@ namespace H2020.IPMDecisions.SCH.API.Providers
             httpClient?.Dispose();
         }
 
-        public async Task<IEnumerable<DssInformation>> GetAllListOfDssFromDssMicroservice(string cropEppoCode, string language = "en")
+        public async Task<IEnumerable<DssInformation>> GetAllListOfDssFromDssMicroservice(string cropEppoCode, string language)
         {
             try
             {
@@ -42,8 +42,18 @@ namespace H2020.IPMDecisions.SCH.API.Providers
                 if (!memoryCache.TryGetValue(cacheKey, out IEnumerable<DssInformation> listOfDss))
                 {
                     var dssEndPoint = config["MicroserviceInternalCommunication:DssMicroservice"];
-                    var response = await httpClient.GetAsync(string.Format("{0}rest/dss?language={1}", dssEndPoint, language));
 
+                    var endpointUrl = string.Format("{0}rest/dss", dssEndPoint);
+                    if (!string.IsNullOrEmpty(cropEppoCode))
+                    {
+                        endpointUrl = string.Format("{0}/crop/{1}", endpointUrl, cropEppoCode.ToUpper());
+                    }
+                    if (!string.IsNullOrEmpty(language))
+                    {
+                        endpointUrl = string.Format("{0}?language={1}", endpointUrl, language);
+                    }
+
+                    var response = await httpClient.GetAsync(endpointUrl);
                     if (!response.IsSuccessStatusCode)
                         return null;
 
