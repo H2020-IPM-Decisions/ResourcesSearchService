@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace H2020.IPMDecisions.SCH.API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class SearchController : ControllerBase
     {
 
