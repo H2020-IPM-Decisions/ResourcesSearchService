@@ -3,6 +3,7 @@ using H2020.IPMDecisions.SCH.API.Providers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Net.Mime;
 using System.Threading.Tasks;
@@ -30,14 +31,22 @@ namespace H2020.IPMDecisions.SCH.API.Controllers
         /// </summary>
         /// </remarks>
         [ProducesResponseType(typeof(IEnumerable<SearchResponseDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorMessageDto), StatusCodes.Status400BadRequest)]
         [Produces(MediaTypeNames.Application.Json)]
         [Consumes(MediaTypeNames.Application.Json)]
         [HttpPost(Name = "api.search.post")]
         public async Task<IActionResult> Post([FromBody] SearchRequestDto searchRequestDto)
         {
-            var listOfDss = await this.microservicesCommunication.GetAllListOfDssFromDssMicroservice(searchRequestDto.SpecificCrop, searchRequestDto.Language);
-            return Ok(listOfDss);
+            try
+            {
+                var listOfDss = await this.microservicesCommunication.GetAllListOfDssFromDssMicroservice(searchRequestDto.SpecificCrop, searchRequestDto.Language);
+                if (listOfDss == null) throw new SystemException("System not available, please try again later.");
+                return Ok(listOfDss);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ErrorMessageDto { Message = ex.Message });
+            }
         }
     }
 }
