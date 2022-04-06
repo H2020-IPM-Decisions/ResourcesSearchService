@@ -1,3 +1,5 @@
+using System;
+using H2020.IPMDecisions.SCH.API.Providers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -20,12 +22,17 @@ namespace H2020.IPMDecisions.SCH.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddHttpClient<IMicroservicesInternalCommunicationHttpProvider, MicroservicesInternalCommunicationHttpProvider>(client =>
+            {
+                client.BaseAddress = new Uri(Configuration["MicroserviceInternalCommunication:ApiGatewayAddress"]);
+            });
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "H2020.IPMDecisions.SCH.API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "H2020 IPM Decisions - Resource Search Service API", Version = "v1" });
             });
+
+            services.AddMemoryCache();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
