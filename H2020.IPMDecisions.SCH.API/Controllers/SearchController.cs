@@ -1,4 +1,5 @@
 ﻿using H2020.IPMDecisions.SCH.API.Dtos;
+using H2020.IPMDecisions.SCH.API.Providers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -13,11 +14,15 @@ namespace H2020.IPMDecisions.SCH.API.Controllers
     public class SearchController : ControllerBase
     {
 
-        private readonly ILogger<SearchController> _logger;
+        private readonly ILogger<SearchController> logger;
+        private readonly IMicroservicesInternalCommunicationHttpProvider microservicesCommunication;
 
-        public SearchController(ILogger<SearchController> logger)
+        public SearchController(
+            ILogger<SearchController> logger,
+            IMicroservicesInternalCommunicationHttpProvider microservicesCommunication)
         {
-            _logger = logger;
+            this.microservicesCommunication = microservicesCommunication;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -31,7 +36,8 @@ namespace H2020.IPMDecisions.SCH.API.Controllers
         [HttpPost(Name = "api.search.post")]
         public async Task<IActionResult> Post([FromBody] SearchRequestDto searchRequestDto)
         {
-            return Ok();
+            var listOfDss = await this.microservicesCommunication.GetAllListOfDssFromDssMicroservice("", "");
+            return Ok(listOfDss);
         }
     }
 }

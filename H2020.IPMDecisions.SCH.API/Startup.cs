@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 using H2020.IPMDecisions.SCH.API.Providers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -26,7 +27,15 @@ namespace H2020.IPMDecisions.SCH.API
             {
                 client.BaseAddress = new Uri(Configuration["MicroserviceInternalCommunication:ApiGatewayAddress"]);
             });
-            services.AddControllers();
+
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+                    options.JsonSerializerOptions.WriteIndented = true;
+                    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "H2020 IPM Decisions - Resource Search Service API", Version = "v1" });
