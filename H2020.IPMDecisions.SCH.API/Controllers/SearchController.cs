@@ -1,4 +1,6 @@
-﻿using H2020.IPMDecisions.SCH.API.Dtos;
+﻿using AutoMapper;
+using H2020.IPMDecisions.SCH.API.Dtos;
+using H2020.IPMDecisions.SCH.API.Models;
 using H2020.IPMDecisions.SCH.API.Providers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,13 +20,16 @@ namespace H2020.IPMDecisions.SCH.API.Controllers
 
         private readonly ILogger<SearchController> logger;
         private readonly IMicroservicesInternalCommunicationHttpProvider microservicesCommunication;
+        private readonly IMapper mapper;
 
         public SearchController(
             ILogger<SearchController> logger,
-            IMicroservicesInternalCommunicationHttpProvider microservicesCommunication)
+            IMicroservicesInternalCommunicationHttpProvider microservicesCommunication,
+            IMapper mapper)
         {
-            this.microservicesCommunication = microservicesCommunication;
-            this.logger = logger;
+            this.microservicesCommunication = microservicesCommunication ?? throw new ArgumentNullException(nameof(microservicesCommunication));
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
@@ -43,7 +48,7 @@ namespace H2020.IPMDecisions.SCH.API.Controllers
                 var listOfDss = await this.microservicesCommunication.GetAllListOfDssFromDssMicroservice(searchRequestDto.SpecificCrop, searchRequestDto.Language);
                 if (listOfDss == null) throw new SystemException("System not available, please try again later.");
 
-                var listOfModels = listOfDss
+                IEnumerable<DssModelInformation> listOfModels = listOfDss
                     .SelectMany(d => d.DssModelInformation);
                 if (!string.IsNullOrEmpty(searchRequestDto.PestType))
                 {
@@ -54,11 +59,11 @@ namespace H2020.IPMDecisions.SCH.API.Controllers
                 // if (!string.IsNullOrEmpty(searchRequestDto.Country)){}
                 // if (!string.IsNullOrEmpty(searchRequestDto.Sector)){}
                 // if (!string.IsNullOrEmpty(searchRequestDto.ResourceType)){}
-                listOfDss = listOfDss
-                    .ToList();
-                // ToDo: map models to DSS to responseDto
 
-                return Ok(listOfModels);
+                listOfModels = listOfModels
+                    .ToList();
+                var dataToReturn = this.mapper.Map<IEnumerable<SearchResponseDto>>(listOfModels);
+                return Ok(dataToReturn);
             }
             catch (Exception ex)
             {

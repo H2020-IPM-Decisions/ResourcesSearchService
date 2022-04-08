@@ -1,5 +1,6 @@
 using System;
 using System.Text.Json;
+using H2020.IPMDecisions.SCH.API.MappingProfiles;
 using H2020.IPMDecisions.SCH.API.Providers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,6 +28,8 @@ namespace H2020.IPMDecisions.SCH.API
             {
                 client.BaseAddress = new Uri(Configuration["MicroserviceInternalCommunication:ApiGatewayAddress"]);
             });
+
+            services.AddAutoMapper(typeof(MainProfile));
 
             services.AddControllers()
                 .AddJsonOptions(options =>
