@@ -22,7 +22,7 @@ jobs:
         with:
           dotnet-version: 5.0.x
       - name: Build image with develop
-        run: docker build . -f "./Docker/Dockerfile" -t "${{ env.DOCKER_IMAGE_NAME }}:develop" --build-arg BUILDER_VERSION=develop --build-arg RELEASE_DATE=${{ steps.current-time.outputs.time }}
+        run: docker build . -f "./.docker/Dockerfile" -t "${{ env.DOCKER_IMAGE_NAME }}:develop" --build-arg BUILDER_VERSION=develop --build-arg RELEASE_DATE=${{ steps.current-time.outputs.time }}
       - name: Login to docker hub
         uses: actions-hub/docker/login@master
         env:
