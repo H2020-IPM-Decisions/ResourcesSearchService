@@ -53,7 +53,7 @@ namespace H2020.IPMDecisions.SCH.API.Models
         [JsonPropertyName("description_URL")]
         public string DescriptionUrl { get; set; }
         [JsonPropertyName("description")]
-        public DssDescription Description { get; set; }
+        public string Description { get; set; }
         [JsonPropertyName("version")]
         public string Version { get; set; }
         // public string Citation { get; set; }
@@ -69,20 +69,6 @@ namespace H2020.IPMDecisions.SCH.API.Models
         public IEnumerable<DssModelAuthors> Authors { get; set; }
         [JsonPropertyName("platform_validated")]
         public bool PlatformValidated { get; set; }
-    }
-
-    public class DssDescription
-    {
-        [JsonPropertyName("created_by")]
-        public string CreatedBy { get; set; }
-        [JsonPropertyName("age")]
-        public string Age { get; set; }
-        [JsonPropertyName("assumptions")]
-        public string Assumptions { get; set; }
-        [JsonPropertyName("peer_review")]
-        public string PeerReview { get; set; }
-        [JsonPropertyName("other")]
-        public string Other { get; set; }
     }
 
     public class DssModelValidSpatial
