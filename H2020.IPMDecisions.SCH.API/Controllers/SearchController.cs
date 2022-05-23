@@ -49,8 +49,9 @@ namespace H2020.IPMDecisions.SCH.API.Controllers
                 var listOfDss = await this.microservicesCommunication.GetAllListOfDssFromDssMicroservice(listOfCrops, searchRequestDto.Language);
                 if (listOfDss == null) throw new SystemException("System not available, please try again later.");
 
-                IEnumerable<DssModelInformation> listOfModels = listOfDss
-                    .SelectMany(d => d.DssModelInformation);
+                IEnumerable<DssInformationJoined> dssModelWithParent = listOfDss
+                    .SelectMany(d => d.DssModelInformation, (dss, model) =>
+                        new DssInformationJoined { DssInformation = dss, DssModelInformation = model });
                 // if (!string.IsNullOrEmpty(searchRequestDto.PestType))
                 // {
                 //     listOfModels = listOfModels
@@ -61,9 +62,9 @@ namespace H2020.IPMDecisions.SCH.API.Controllers
                 // if (!string.IsNullOrEmpty(searchRequestDto.Sector)){}
                 // if (!string.IsNullOrEmpty(searchRequestDto.ResourceType)){}
 
-                listOfModels = listOfModels
+                dssModelWithParent = dssModelWithParent
                     .ToList();
-                var dataToReturn = this.mapper.Map<IEnumerable<SearchResponseDto>>(listOfModels);
+                var dataToReturn = this.mapper.Map<IEnumerable<SearchResponseDto>>(dssModelWithParent);
                 return Ok(dataToReturn);
             }
             catch (Exception ex)
