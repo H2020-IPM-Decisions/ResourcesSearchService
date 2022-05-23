@@ -45,26 +45,30 @@ namespace H2020.IPMDecisions.SCH.API.Controllers
         {
             try
             {
-                var listOfCrops = searchRequestDto.Crops != null ? string.Join(",", searchRequestDto.Crops) : "";
+                var listOfCrops = searchRequestDto.Crops != null ? string.Join(",", searchRequestDto.Crops).ToUpper() : "";
                 var listOfDss = await this.microservicesCommunication.GetAllListOfDssFromDssMicroservice(listOfCrops, searchRequestDto.Language);
                 if (listOfDss == null) throw new SystemException("System not available, please try again later.");
 
-                IEnumerable<DssInformationJoined> dssModelWithParent = listOfDss
+                IEnumerable<DssInformationJoined> dssModelsWithParent = listOfDss
                     .SelectMany(d => d.DssModelInformation, (dss, model) =>
                         new DssInformationJoined { DssInformation = dss, DssModelInformation = model });
-                // if (!string.IsNullOrEmpty(searchRequestDto.PestType))
-                // {
-                //     listOfModels = listOfModels
-                //         .Where(m => m.Pests
-                //             .Contains(searchRequestDto.PestType.ToUpper()));
-                // }
+
+                if (searchRequestDto.Pests != null & searchRequestDto.Pests.Count > 0)
+                {
+                    var pests = searchRequestDto.Pests.Select(p => p.ToUpper());
+                    dssModelsWithParent = dssModelsWithParent
+                        .Where(m => m.DssModelInformation.Pests != null)
+                        .Where(m => m.DssModelInformation.Pests
+                            .Intersect(pests)
+                            .Any());
+                }
                 // if (!string.IsNullOrEmpty(searchRequestDto.Country)){}
                 // if (!string.IsNullOrEmpty(searchRequestDto.Sector)){}
                 // if (!string.IsNullOrEmpty(searchRequestDto.ResourceType)){}
 
-                dssModelWithParent = dssModelWithParent
+                dssModelsWithParent = dssModelsWithParent
                     .ToList();
-                var dataToReturn = this.mapper.Map<IEnumerable<SearchResponseDto>>(dssModelWithParent);
+                var dataToReturn = this.mapper.Map<IEnumerable<SearchResponseDto>>(dssModelsWithParent);
                 return Ok(dataToReturn);
             }
             catch (Exception ex)
