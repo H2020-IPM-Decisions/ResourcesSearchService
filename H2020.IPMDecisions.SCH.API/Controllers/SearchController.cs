@@ -53,18 +53,26 @@ namespace H2020.IPMDecisions.SCH.API.Controllers
                     .SelectMany(d => d.DssModelInformation, (dss, model) =>
                         new DssInformationJoined { DssInformation = dss, DssModelInformation = model });
 
-                if (searchRequestDto.Pests != null & searchRequestDto.Pests.Count > 0)
+                if (searchRequestDto.Pests != null && searchRequestDto.Pests.Count > 0)
                 {
                     var pests = searchRequestDto.Pests.Select(p => p.ToUpper());
                     dssModelsWithParent = dssModelsWithParent
-                        .Where(m => m.DssModelInformation.Pests != null)
-                        .Where(m => m.DssModelInformation.Pests
-                            .Intersect(pests)
-                            .Any());
+                        .Where(m => m.DssModelInformation.Pests != null &&
+                             m.DssModelInformation.Pests
+                                .Intersect(pests)
+                                .Any());
                 }
-                // if (!string.IsNullOrEmpty(searchRequestDto.Country)){}
-                // if (!string.IsNullOrEmpty(searchRequestDto.Sector)){}
-                // if (!string.IsNullOrEmpty(searchRequestDto.ResourceType)){}
+
+                if (searchRequestDto.Regions != null && searchRequestDto.Regions.Count > 0)
+                {
+                    var regions = searchRequestDto.Regions.Select(r => r.ToUpper());
+                    dssModelsWithParent = dssModelsWithParent
+                        .Where(m => m.DssModelInformation.ValidSpatial != null &&
+                            m.DssModelInformation.ValidSpatial.Countries != null &&
+                            m.DssModelInformation.ValidSpatial.Countries
+                                .Intersect(regions)
+                                .Any());
+                }
 
                 dssModelsWithParent = dssModelsWithParent
                     .ToList();
