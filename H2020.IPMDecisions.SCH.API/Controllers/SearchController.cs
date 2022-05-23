@@ -84,5 +84,27 @@ namespace H2020.IPMDecisions.SCH.API.Controllers
                 return BadRequest(new ErrorMessageDto { Message = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Use this request to get all the information from a DSS Model using their ID
+        /// </summary>
+        /// </remarks>
+        [ProducesResponseType(typeof(SearchDetailedResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorMessageDto), StatusCodes.Status400BadRequest)]
+        [Produces(MediaTypeNames.Application.Json)]
+        [HttpGet("{dssModelId}", Name = "api.search.get")]
+        public async Task<IActionResult> Get([FromRoute] string dssModelId)
+        {
+            return Ok(dssModelId);
+        }
+
+        // <summary>Requests permitted on this URL</summary>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpOptions]
+        public IActionResult Options()
+        {
+            Response.Headers.Add("Allow", "OPTIONS, GET, POST");
+            return Ok();
+        }
     }
 }
