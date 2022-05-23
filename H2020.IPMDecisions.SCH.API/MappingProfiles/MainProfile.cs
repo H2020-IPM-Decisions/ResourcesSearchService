@@ -18,7 +18,8 @@ namespace H2020.IPMDecisions.SCH.API.MappingProfiles
             CreateMap<DssInformationJoined, SearchResponseDto>()
                 .ForMember(dest => dest.ResourceId, opt => opt.MapFrom(src => string.Format("{0};{1}", src.DssInformation.Id, src.DssModelInformation.Id)))
                 .ForMember(dest => dest.ResourceName, opt => opt.MapFrom(src => src.DssModelInformation.Name))
-                .ForMember(dest => dest.Regions, opt => opt.MapFrom(src => src.DssModelInformation.ValidSpatial.Countries));
+                .ForMember(dest => dest.Regions, opt => opt.MapFrom(src => src.DssModelInformation.ValidSpatial.Countries))
+                .ForMember(dest => dest.Languages, opt => opt.MapFrom(src => src.DssInformation.Languages));
         }
     }
 }
