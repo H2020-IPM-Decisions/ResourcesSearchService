@@ -77,5 +77,24 @@ namespace H2020.IPMDecisions.SCH.API.Providers
                 return null;
             }
         }
+
+        public async Task<DssInformation> GetDssInformationFromDssMicroservice(string dssId)
+        {
+            try
+            {
+                var dssEndPoint = config["MicroserviceInternalCommunication:DssMicroservice"];
+                var response = await httpClient.GetAsync(string.Format("{0}rest/dss/{1}", dssEndPoint, dssId));
+
+                if (!response.IsSuccessStatusCode) return null;
+
+                var responseAsText = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<DssInformation>(responseAsText);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(string.Format("Error in Internal Communication - GetDssInformationFromDssMicroservice. {0}", ex.Message));
+                return null;
+            }
+        }
     }
 }
