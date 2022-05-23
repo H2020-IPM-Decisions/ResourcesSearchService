@@ -17,5 +17,7 @@ namespace H2020.IPMDecisions.SCH.API.Dtos
 
         [JsonPropertyName("resourceType")]
         public string ResourceType { get; set; } = "IPM Decisions Model";
+        [JsonPropertyName("project")]
+        public string Project { get; set; } = "IPM Decisions";
     }
 }
