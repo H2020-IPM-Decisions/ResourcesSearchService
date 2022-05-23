@@ -45,17 +45,18 @@ namespace H2020.IPMDecisions.SCH.API.Controllers
         {
             try
             {
-                var listOfDss = await this.microservicesCommunication.GetAllListOfDssFromDssMicroservice(searchRequestDto.SpecificCrop, searchRequestDto.Language);
+                var listOfCrops = searchRequestDto.Crops != null ? string.Join(",", searchRequestDto.Crops) : "";
+                var listOfDss = await this.microservicesCommunication.GetAllListOfDssFromDssMicroservice(listOfCrops, searchRequestDto.Language);
                 if (listOfDss == null) throw new SystemException("System not available, please try again later.");
 
                 IEnumerable<DssModelInformation> listOfModels = listOfDss
                     .SelectMany(d => d.DssModelInformation);
-                if (!string.IsNullOrEmpty(searchRequestDto.PestType))
-                {
-                    listOfModels = listOfModels
-                        .Where(m => m.Pests
-                            .Contains(searchRequestDto.PestType.ToUpper()));
-                }
+                // if (!string.IsNullOrEmpty(searchRequestDto.PestType))
+                // {
+                //     listOfModels = listOfModels
+                //         .Where(m => m.Pests
+                //             .Contains(searchRequestDto.PestType.ToUpper()));
+                // }
                 // if (!string.IsNullOrEmpty(searchRequestDto.Country)){}
                 // if (!string.IsNullOrEmpty(searchRequestDto.Sector)){}
                 // if (!string.IsNullOrEmpty(searchRequestDto.ResourceType)){}

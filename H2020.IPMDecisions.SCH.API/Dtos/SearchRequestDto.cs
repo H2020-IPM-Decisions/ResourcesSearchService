@@ -1,22 +1,17 @@
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace H2020.IPMDecisions.SCH.API.Dtos
 {
     public class SearchRequestDto
     {
-        [JsonPropertyName("country")]
-        public string Country { get; set; }
-        [JsonPropertyName("sector")]
-        public string Sector { get; set; }
-        [JsonPropertyName("pest_type")]
-        public string PestType { get; set; }
-        [JsonPropertyName("resource_type")]
-        public string ResourceType { get; set; }
-        [JsonPropertyName("specific_crop")]
-        public string SpecificCrop { get; set; }
+        [JsonPropertyName("regions")]
+        public List<string> Regions { get; set; }
+        [JsonPropertyName("pests")]
+        public List<string> Pests { get; set; }
+        [JsonPropertyName("crops")]
+        public List<string> Crops { get; set; }
         [JsonPropertyName("language")]
         public string Language { get; set; }
-        [JsonPropertyName("project")]
-        public string Project { get; set; }
     }
 }

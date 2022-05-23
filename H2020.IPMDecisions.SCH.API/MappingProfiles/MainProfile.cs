@@ -13,7 +13,7 @@ namespace H2020.IPMDecisions.SCH.API.MappingProfiles
 
             CreateMap<DssModelInformation, SearchResponseDto>()
                 .ForMember(dest => dest.ResourceId, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Name));
+                .ForMember(dest => dest.ResourceName, opt => opt.MapFrom(src => src.Name));
         }
     }
 }

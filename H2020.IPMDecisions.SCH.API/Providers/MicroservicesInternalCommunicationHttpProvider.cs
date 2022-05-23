@@ -34,19 +34,19 @@ namespace H2020.IPMDecisions.SCH.API.Providers
             httpClient?.Dispose();
         }
 
-        public async Task<IEnumerable<DssInformation>> GetAllListOfDssFromDssMicroservice(string cropEppoCode, string language)
+        public async Task<IEnumerable<DssInformation>> GetAllListOfDssFromDssMicroservice(string cropEppoCodes, string language)
         {
             try
             {
-                var cacheKey = string.Format("listOfDss_{0}_{1}", cropEppoCode, language);
+                var cacheKey = string.Format("listOfDss_{0}_{1}", cropEppoCodes, language);
                 if (!memoryCache.TryGetValue(cacheKey, out IEnumerable<DssInformation> listOfDss))
                 {
                     var dssEndPoint = config["MicroserviceInternalCommunication:DssMicroservice"];
 
                     var endpointUrl = string.Format("{0}rest/dss", dssEndPoint);
-                    if (!string.IsNullOrEmpty(cropEppoCode))
+                    if (!string.IsNullOrEmpty(cropEppoCodes))
                     {
-                        endpointUrl = string.Format("{0}/crop/{1}", endpointUrl, cropEppoCode.ToUpper());
+                        endpointUrl = string.Format("{0}/crops/{1}", endpointUrl, cropEppoCodes.ToUpper());
                     }
                     if (!string.IsNullOrEmpty(language))
                     {
