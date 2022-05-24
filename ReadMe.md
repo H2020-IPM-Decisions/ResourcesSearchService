@@ -27,13 +27,13 @@ The API has autogerated documentation using `swagger` and it is accessible on th
     "regions": ["string"],
     "pests": ["string"],
     "crops": ["string"],
-    "language": "string"
+    "language": ["string"]
   }
   ```
 
   - The `pests` and `crops` properties are expecting [EPPO codes](https://www.eppo.int/RESOURCES/eppo_databases/eppo_codes).
 
-  - The `language` property is expecting the value following the [ISO 639-1 Code](https://www.loc.gov/standards/iso639-2/php/code_list.php) standards.
+  - The `languages` property is expecting the value following the [English name of Language](https://www.loc.gov/standards/iso639-2/php/code_list.php) standards.
 
   - The `regions` property is expecting the value following the [Country Codes Alpha-3](https://www.iban.com/country-codes) standards.
 
@@ -398,45 +398,7 @@ When doing the **GET** method, no `language` is specified, so the data will be r
      "pests": ["PSILRO", "DASGPA"],
      "crops": ["DAUCS", "HORVW", "SOLTU"],
      "regions": ["NOR"],
-     "language": "no"
-   }
-   ```
-
-   Returned information.
-
-   > STATUS: `200 OK`
-
-   ```json
-   [
-     {
-       "idResource": "no.nibio.vips;PSILARTEMP",
-       "resourceName": "Gulrotflue svermetidspunktmodell",
-       "regions": ["NOR"],
-       "languages": ["Norwegian", "English"],
-       "resourceType": "IPM Decisions Model",
-       "project": "IPM Decisions"
-     },
-     {
-       "idResource": "no.nibio.vips;PSILAROBSE",
-       "resourceName": "Carrot rust fly observation model",
-       "regions": ["NOR"],
-       "languages": ["Norwegian", "English"],
-       "resourceType": "IPM Decisions Model",
-       "project": "IPM Decisions"
-     }
-   ]
-   ```
-
-1. `Crops`, `Pests`, `Regions` and a NOT **existing** `language` filter on **POST** call.
-
-   Request Payload
-
-   ```json
-   {
-     "pests": ["PSILRO", "DASGPA"],
-     "crops": ["DAUCS", "HORVW", "SOLTU"],
-     "regions": ["NOR"],
-     "language": "es"
+     "languages": ["Norwegian"]
    }
    ```
 

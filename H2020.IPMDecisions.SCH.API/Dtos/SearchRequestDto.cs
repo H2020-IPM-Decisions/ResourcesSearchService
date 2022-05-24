@@ -11,7 +11,7 @@ namespace H2020.IPMDecisions.SCH.API.Dtos
         public List<string> Pests { get; set; }
         [JsonPropertyName("crops")]
         public List<string> Crops { get; set; }
-        [JsonPropertyName("language")]
-        public string Language { get; set; }
+        [JsonPropertyName("languages")]
+        public List<string> Languages { get; set; }
     }
 }
