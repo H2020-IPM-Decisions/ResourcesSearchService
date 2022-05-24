@@ -46,7 +46,7 @@ namespace H2020.IPMDecisions.SCH.API.Controllers
             try
             {
                 var listOfCrops = searchRequestDto.Crops != null ? string.Join(",", searchRequestDto.Crops).ToUpper() : "";
-                var listOfDss = await this.microservicesCommunication.GetAllListOfDssFromDssMicroservice(listOfCrops, "en");
+                var listOfDss = await this.microservicesCommunication.GetAllListOfDssFromDssMicroservice(listOfCrops);
                 if (listOfDss == null) throw new SystemException("System not available, please try again later.");
 
                 IEnumerable<DssInformationJoined> dssModelsWithParent = listOfDss
