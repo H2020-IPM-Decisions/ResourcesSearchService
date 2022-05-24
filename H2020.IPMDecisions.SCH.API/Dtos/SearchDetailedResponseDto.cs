@@ -21,6 +21,8 @@ namespace H2020.IPMDecisions.SCH.API.Dtos
         public string ContactEmail { get; set; }
         [JsonPropertyName("contactPhone")]
         public string ContactPhone { get; set; }
+        [JsonPropertyName("contactAddress")]
+        public string ContactAddress { get; set; }
         [JsonPropertyName("links")]
         public string Links { get; set; }
         [JsonPropertyName("project")]
@@ -32,7 +34,7 @@ namespace H2020.IPMDecisions.SCH.API.Dtos
         [JsonPropertyName("crops")]
         public List<string> Crops { get; set; }
         [JsonPropertyName("regions")]
-        public string Regions { get; set; }
+        public List<string> Regions { get; set; }
         [JsonPropertyName("languages")]
         public List<string> Languages { get; set; }
     }

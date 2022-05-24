@@ -95,7 +95,29 @@ namespace H2020.IPMDecisions.SCH.API.Controllers
         [HttpGet("{dssModelId}", Name = "api.search.get")]
         public async Task<IActionResult> Get([FromRoute] string dssModelId)
         {
-            return Ok(dssModelId);
+            try
+            {
+                var dssAndModel = dssModelId.Split(";").ToList();
+                if (dssAndModel.Count != 2) throw new SystemException("The ID should hold the DSS Id and the model Id, e.g: 'adas.dss;CARPPO'");
+                DssInformation dssInformation = await this.microservicesCommunication.GetDssInformationFromDssMicroservice(dssAndModel[0]);
+                if (dssInformation == null) return NotFound();
+
+                DssModelInformation dssModelInformation = dssInformation.DssModelInformation
+                    .Where(m => m.Id == dssAndModel[1]).FirstOrDefault();
+                if (dssModelInformation == null) return NotFound();
+
+                var dssModelJoined = new DssInformationJoined()
+                {
+                    DssInformation = dssInformation,
+                    DssModelInformation = dssModelInformation
+                };
+                var dataToReturn = this.mapper.Map<SearchDetailedResponseDto>(dssModelJoined);
+                return Ok(dataToReturn);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ErrorMessageDto { Message = ex.Message });
+            }
         }
 
         // <summary>Requests permitted on this URL</summary>
