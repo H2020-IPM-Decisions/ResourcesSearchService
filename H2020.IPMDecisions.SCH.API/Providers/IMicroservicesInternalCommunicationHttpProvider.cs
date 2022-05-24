@@ -7,5 +7,6 @@ namespace H2020.IPMDecisions.SCH.API.Providers
     public interface IMicroservicesInternalCommunicationHttpProvider
     {
         Task<IEnumerable<DssInformation>> GetAllListOfDssFromDssMicroservice(string cropEppoCode, string language);
+        Task<DssInformation> GetDssInformationFromDssMicroservice(string dssId);
     }
 }

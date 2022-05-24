@@ -56,7 +56,8 @@ namespace H2020.IPMDecisions.SCH.API.Models
         public string Description { get; set; }
         [JsonPropertyName("version")]
         public string Version { get; set; }
-        // public string Citation { get; set; }
+        [JsonPropertyName("citation")]
+        public string Citation { get; set; }
         [JsonPropertyName("keywords")]
         public string Keywords { get; set; }
         [JsonPropertyName("pests")]

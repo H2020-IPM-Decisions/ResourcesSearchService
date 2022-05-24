@@ -1,20 +1,23 @@
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace H2020.IPMDecisions.SCH.API.Dtos
 {
     public class SearchResponseDto
     {
-        [JsonPropertyName("resourceId")] 
+        [JsonPropertyName("idResource")]
         public string ResourceId { get; set; }
-        [JsonPropertyName("title")] 
-        public string Title { get; set; }
-        [JsonPropertyName("resource_type")]
-        public string ResourceType { get; set; }
-        [JsonPropertyName("country_origin")]
-        public string CountryOrigin { get; set; }
-        [JsonPropertyName("language")]
-        public string Language { get; set; }
-        [JsonPropertyName("sector")]
-        public string Sector { get; set; }
+        [JsonPropertyName("resourceName")]
+        public string ResourceName { get; set; }
+
+        [JsonPropertyName("regions")]
+        public List<string> Regions { get; set; }
+        [JsonPropertyName("languages")]
+        public List<string> Languages { get; set; }
+
+        [JsonPropertyName("resourceType")]
+        public string ResourceType { get; set; } = "IPM Decisions Model";
+        [JsonPropertyName("project")]
+        public string Project { get; set; } = "IPM Decisions";
     }
 }

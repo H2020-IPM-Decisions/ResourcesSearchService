@@ -45,30 +45,88 @@ namespace H2020.IPMDecisions.SCH.API.Controllers
         {
             try
             {
-                var listOfDss = await this.microservicesCommunication.GetAllListOfDssFromDssMicroservice(searchRequestDto.SpecificCrop, searchRequestDto.Language);
+                var listOfCrops = searchRequestDto.Crops != null ? string.Join(",", searchRequestDto.Crops).ToUpper() : "";
+                var listOfDss = await this.microservicesCommunication.GetAllListOfDssFromDssMicroservice(listOfCrops, searchRequestDto.Language);
                 if (listOfDss == null) throw new SystemException("System not available, please try again later.");
 
-                IEnumerable<DssModelInformation> listOfModels = listOfDss
-                    .SelectMany(d => d.DssModelInformation);
-                if (!string.IsNullOrEmpty(searchRequestDto.PestType))
-                {
-                    listOfModels = listOfModels
-                        .Where(m => m.Pests
-                            .Contains(searchRequestDto.PestType.ToUpper()));
-                }
-                // if (!string.IsNullOrEmpty(searchRequestDto.Country)){}
-                // if (!string.IsNullOrEmpty(searchRequestDto.Sector)){}
-                // if (!string.IsNullOrEmpty(searchRequestDto.ResourceType)){}
+                IEnumerable<DssInformationJoined> dssModelsWithParent = listOfDss
+                    .SelectMany(d => d.DssModelInformation, (dss, model) =>
+                        new DssInformationJoined { DssInformation = dss, DssModelInformation = model });
 
-                listOfModels = listOfModels
+                if (searchRequestDto.Pests != null && searchRequestDto.Pests.Count > 0)
+                {
+                    var pests = searchRequestDto.Pests.Select(p => p.ToUpper());
+                    dssModelsWithParent = dssModelsWithParent
+                        .Where(m => m.DssModelInformation.Pests != null &&
+                             m.DssModelInformation.Pests
+                                .Intersect(pests)
+                                .Any());
+                }
+
+                if (searchRequestDto.Regions != null && searchRequestDto.Regions.Count > 0)
+                {
+                    var regions = searchRequestDto.Regions.Select(r => r.ToUpper());
+                    dssModelsWithParent = dssModelsWithParent
+                        .Where(m => m.DssModelInformation.ValidSpatial != null &&
+                            m.DssModelInformation.ValidSpatial.Countries != null &&
+                            m.DssModelInformation.ValidSpatial.Countries
+                                .Intersect(regions)
+                                .Any());
+                }
+
+                dssModelsWithParent = dssModelsWithParent
                     .ToList();
-                var dataToReturn = this.mapper.Map<IEnumerable<SearchResponseDto>>(listOfModels);
+                var dataToReturn = this.mapper.Map<IEnumerable<SearchResponseDto>>(dssModelsWithParent);
                 return Ok(dataToReturn);
             }
             catch (Exception ex)
             {
                 return BadRequest(new ErrorMessageDto { Message = ex.Message });
             }
+        }
+
+        /// <summary>
+        /// Use this request to get all the information from a DSS Model using their ID
+        /// </summary>
+        /// </remarks>
+        [ProducesResponseType(typeof(SearchDetailedResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorMessageDto), StatusCodes.Status400BadRequest)]
+        [Produces(MediaTypeNames.Application.Json)]
+        [HttpGet("{dssModelId}", Name = "api.search.get")]
+        public async Task<IActionResult> Get([FromRoute] string dssModelId)
+        {
+            try
+            {
+                var dssAndModel = dssModelId.Split(";").ToList();
+                if (dssAndModel.Count != 2) throw new SystemException("The ID should hold the DSS Id and the model Id, e.g: 'adas.dss;CARPPO'");
+                DssInformation dssInformation = await this.microservicesCommunication.GetDssInformationFromDssMicroservice(dssAndModel[0]);
+                if (dssInformation == null) return NotFound();
+
+                DssModelInformation dssModelInformation = dssInformation.DssModelInformation
+                    .Where(m => m.Id == dssAndModel[1]).FirstOrDefault();
+                if (dssModelInformation == null) return NotFound();
+
+                var dssModelJoined = new DssInformationJoined()
+                {
+                    DssInformation = dssInformation,
+                    DssModelInformation = dssModelInformation
+                };
+                var dataToReturn = this.mapper.Map<SearchDetailedResponseDto>(dssModelJoined);
+                return Ok(dataToReturn);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ErrorMessageDto { Message = ex.Message });
+            }
+        }
+
+        // <summary>Requests permitted on this URL</summary>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpOptions]
+        public IActionResult Options()
+        {
+            Response.Headers.Add("Allow", "OPTIONS, GET, POST");
+            return Ok();
         }
     }
 }
