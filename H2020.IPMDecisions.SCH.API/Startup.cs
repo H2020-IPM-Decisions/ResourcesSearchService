@@ -1,5 +1,6 @@
 using System;
 using System.Text.Json;
+using H2020.IPMDecisions.SCH.API.Filters;
 using H2020.IPMDecisions.SCH.API.MappingProfiles;
 using H2020.IPMDecisions.SCH.API.Providers;
 using Microsoft.AspNetCore.Builder;
@@ -30,6 +31,7 @@ namespace H2020.IPMDecisions.SCH.API
             });
 
             services.AddAutoMapper(typeof(MainProfile));
+            services.AddSingleton<LocationMiddleware>();
 
             services.AddControllers()
                 .AddJsonOptions(options =>
@@ -74,6 +76,7 @@ namespace H2020.IPMDecisions.SCH.API
 
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseMiddleware<LocationMiddleware>();
 
             var apiBasePath = Configuration["MicroserviceInternalCommunication:SearchMicroservice"];
             app.UseSwagger(c =>

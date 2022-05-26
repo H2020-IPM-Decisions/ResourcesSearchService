@@ -46,7 +46,7 @@ namespace H2020.IPMDecisions.SCH.API.Controllers
             try
             {
                 var listOfCrops = searchRequestDto.Crops != null ? string.Join(",", searchRequestDto.Crops).ToUpper() : "";
-                var listOfDss = await this.microservicesCommunication.GetAllListOfDssFromDssMicroservice(listOfCrops, searchRequestDto.Language);
+                var listOfDss = await this.microservicesCommunication.GetAllListOfDssFromDssMicroservice(listOfCrops);
                 if (listOfDss == null) throw new SystemException("System not available, please try again later.");
 
                 IEnumerable<DssInformationJoined> dssModelsWithParent = listOfDss
@@ -59,7 +59,7 @@ namespace H2020.IPMDecisions.SCH.API.Controllers
                     dssModelsWithParent = dssModelsWithParent
                         .Where(m => m.DssModelInformation.Pests != null &&
                              m.DssModelInformation.Pests
-                                .Intersect(pests)
+                                .Intersect(pests, StringComparer.OrdinalIgnoreCase)
                                 .Any());
                 }
 
@@ -70,7 +70,18 @@ namespace H2020.IPMDecisions.SCH.API.Controllers
                         .Where(m => m.DssModelInformation.ValidSpatial != null &&
                             m.DssModelInformation.ValidSpatial.Countries != null &&
                             m.DssModelInformation.ValidSpatial.Countries
-                                .Intersect(regions)
+                                .Intersect(regions, StringComparer.OrdinalIgnoreCase)
+                                .Any());
+                }
+
+                if (searchRequestDto.Languages != null && searchRequestDto.Languages.Count > 0)
+                {
+                    var languages = searchRequestDto.Languages.Select(l => l.ToUpper());
+                    dssModelsWithParent = dssModelsWithParent
+                        .Where(m => m.DssInformation.Languages != null &&
+                            m.DssInformation.Languages != null &&
+                            m.DssInformation.Languages
+                                .Intersect(languages, StringComparer.OrdinalIgnoreCase)
                                 .Any());
                 }
 

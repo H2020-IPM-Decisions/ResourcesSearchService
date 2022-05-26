@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using H2020.IPMDecisions.SCH.API.Models;
 using Microsoft.Extensions.Caching.Memory;
@@ -34,10 +35,11 @@ namespace H2020.IPMDecisions.SCH.API.Providers
             httpClient?.Dispose();
         }
 
-        public async Task<IEnumerable<DssInformation>> GetAllListOfDssFromDssMicroservice(string cropEppoCodes, string language)
+        public async Task<IEnumerable<DssInformation>> GetAllListOfDssFromDssMicroservice(string cropEppoCodes)
         {
             try
             {
+                var language = Thread.CurrentThread.CurrentCulture.Name;
                 var cacheKey = string.Format("listOfDss_{0}_{1}", cropEppoCodes, language);
                 if (!memoryCache.TryGetValue(cacheKey, out IEnumerable<DssInformation> listOfDss))
                 {
@@ -48,10 +50,7 @@ namespace H2020.IPMDecisions.SCH.API.Providers
                     {
                         endpointUrl = string.Format("{0}/crops/{1}", endpointUrl, cropEppoCodes.ToUpper());
                     }
-                    if (!string.IsNullOrEmpty(language))
-                    {
-                        endpointUrl = string.Format("{0}?language={1}", endpointUrl, language);
-                    }
+                    endpointUrl = string.Format("{0}?language={1}", endpointUrl, language);
 
                     var response = await httpClient.GetAsync(endpointUrl);
                     if (!response.IsSuccessStatusCode)
@@ -82,13 +81,27 @@ namespace H2020.IPMDecisions.SCH.API.Providers
         {
             try
             {
-                var dssEndPoint = config["MicroserviceInternalCommunication:DssMicroservice"];
-                var response = await httpClient.GetAsync(string.Format("{0}rest/dss/{1}", dssEndPoint, dssId));
+                var language = Thread.CurrentThread.CurrentCulture.Name;
+                var cacheKey = string.Format("dssInformation_{0}_{1}", dssId, language);
+                if (!memoryCache.TryGetValue(cacheKey, out DssInformation dssInformation))
+                {
+                    var dssEndPoint = config["MicroserviceInternalCommunication:DssMicroservice"];
+                    var response = await httpClient.GetAsync(string.Format("{0}rest/dss/{1}?language={2}", dssEndPoint, dssId, language));
 
-                if (!response.IsSuccessStatusCode) return null;
+                    if (!response.IsSuccessStatusCode) return null;
 
-                var responseAsText = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<DssInformation>(responseAsText);
+                    var responseAsText = await response.Content.ReadAsStringAsync();
+                    dssInformation = JsonSerializer.Deserialize<DssInformation>(responseAsText);
+                    memoryCache.Set(
+                        cacheKey,
+                        dssInformation,
+                        new MemoryCacheEntryOptions
+                        {
+                            AbsoluteExpiration = DateTime.Now.AddDays(1),
+                            Priority = CacheItemPriority.Normal
+                        });
+                }
+                return dssInformation;
             }
             catch (Exception ex)
             {
