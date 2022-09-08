@@ -51,7 +51,8 @@ namespace H2020.IPMDecisions.SCH.API.Controllers
 
                 IEnumerable<DssInformationJoined> dssModelsWithParent = listOfDss
                     .SelectMany(d => d.DssModelInformation, (dss, model) =>
-                        new DssInformationJoined { DssInformation = dss, DssModelInformation = model });
+                        new DssInformationJoined { DssInformation = dss, DssModelInformation = model })
+                    .Where(d => d.DssModelInformation.PlatformValidated == true);
 
                 if (searchRequestDto.Pests != null && searchRequestDto.Pests.Count > 0)
                 {

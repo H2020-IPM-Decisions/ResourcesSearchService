@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 
 ARG URL_EXPOSE_PORT=80
 ARG URL_EXPOSE_PORT_HTTPS=443
@@ -13,7 +13,7 @@ WORKDIR /app
 EXPOSE ${URL_EXPOSE_PORT}
 EXPOSE ${URL_EXPOSE_PORT_HTTPS}
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["H2020.IPMDecisions.SCH.API/H2020.IPMDecisions.SCH.API.csproj", "H2020.IPMDecisions.SCH.API/"]
 COPY ["H2020.IPMDecisions.SCH.API/appsettingsTemplate.json", "H2020.IPMDecisions.SCH.API/appsettings.json"]
