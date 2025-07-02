@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  sch.api:
+    image: ipmdecisions/resourcessearchlatest:local
+    container_name: sch-api
+    hostname: sch.api
+    restart: always
+    build:
+      context: ../
+      dockerfile: ./Docker/Dockerfile
+    ports:
+      - 5003:5003
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80;https://+:443
+      - ASPNETCORE_URLS=http://+:5003
+      - AllowedHosts=*
+      - MicroserviceInternalCommunication:ApiGatewayAddress=http://localhost:5000/
+      - MicroserviceInternalCommunication:DssMicroservice=api/dss/
+      - MicroserviceInternalCommunication:SearchMicroservice=api/sch/
